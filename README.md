@@ -19,6 +19,8 @@ Make sure you have Node.js and npm installed. You can check by running:
 node -v
 npm -v```
 
+---
+
 ### ⚙️ Installation
 1. Clone the repository:
 ``` git clone https://github.com/yourusername/flowershop-frontend.git
