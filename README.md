@@ -15,7 +15,7 @@ This is the frontend application for the Flowershop project, built with React an
 
 Make sure you have Node.js and npm installed. You can check by running:
 
-```bash
+bash
 node -v
 npm -v
 
@@ -23,14 +23,14 @@ npm -v
 
 ### ⚙️ Installation
 1. Clone the repository:
-``` git clone https://github.com/yourusername/flowershop-frontend.git
+git clone https://github.com/yourusername/flowershop-frontend.git
 cd flowershop-frontend 
 
 2. Install dependencies:
-``` npm install 
+npm install 
 
 3. Start the development server:
-``` npm start 
+npm start 
 
 
 
