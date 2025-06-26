@@ -1,26 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
+"use client"
+
+import './index.css';
 import './App.css';
+import { useState } from "react"
+import { mockFlowers } from "./data/flowers"
+import { Product } from "./types/product"
+import Navigation from "./pages/navigation"
+import CustomerView from "./pages/customer-view"
+import AdminView from "./pages/admin-view"
 
-function App() {
+export default function FlowerShop() {
+  const [currentView, setCurrentView] = useState<"customer" | "admin">("customer")
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    <div className="min-h-screen">
+      <Navigation currentView={currentView} onViewChange={setCurrentView} />
 
-export default App;
+      {currentView === "customer" ? (
+        // <CustomerView flowers={flowers} />
+        <></>
+      ) : (
+        <AdminView
+        />
+      )}
+    </div>
+  )
+}
