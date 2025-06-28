@@ -23,6 +23,7 @@ import ProductService from "../services/ProductService";
 import { on } from "events";
 import { start } from "repl";
 import { toast } from "react-toastify";
+import { useEditProduct } from "../hooks/useEditProduct";
 
 interface AdminViewProps {
   flower?: Product;
@@ -37,36 +38,8 @@ export default function EditProduct({
   startEdit,
   onDone = () => {}, 
 }: AdminViewProps) {
-  const [formData, setFormData] = useState<Partial<Product>>({});
+  const { formData, setFormData, resetForm, handleSubmit } = useEditProduct(flower, onDone);
 
-  useEffect(() => {
-    if (flower) {
-      setFormData(flower);
-    } else {
-      // error display
-    }
-  }, []);
-
-  const resetForm = () => {
-    setFormData({});
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-     ProductService.updateProduct(formData as Product).then
-      (() => {
-        onDone(); // Call the callback to reload products
-        toast.success("Product updated successfully!", {
-          icon: <Sparkles className="h-5 w-5 text-purple-500" />,
-        });
-      })
-      .catch((error) => {
-        toast.error("Failed to update product. Please try again and fill everything in.", {
-          icon: <X className="h-5 w-5 text-red-500" />,
-        });
-      });
-  };
 
   return (
     <div>
@@ -285,6 +258,9 @@ export default function EditProduct({
                     >
                       Archive Product
                     </Label>
+                    <p className="text-xs text-slate-500 italic">
+                      Toggle to archive or unarchive this flower. Archived flowers will not appear in the store.
+                    </p>
                   </div>
                 </div>
               </div>
