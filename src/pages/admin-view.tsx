@@ -16,6 +16,17 @@ import { Plus, Edit, Trash2, MoreHorizontalIcon } from "lucide-react";
 import CreateProduct from "./create-product";
 import EditProduct from "./edit-product";
 import ProductService from "../services/ProductService";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../components/ui/alert-dialog";
 
 export default function AdminView() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -27,7 +38,7 @@ export default function AdminView() {
 
   useEffect(() => {
     fetchFlowers();
-  }, []);
+  }, [editingFlower]);
 
   async function fetchFlowers() {
     ProductService.getProducts()
@@ -194,16 +205,38 @@ export default function AdminView() {
                               <Edit className="h-4 w-4" />
                             </Button>
                           )}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              deleteFlower(flower.id);
-                            }}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="bg-white/90 backdrop-blur-sm border-white/50">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Are you sure?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. It will
+                                  permanently delete this flower from your
+                                  inventory.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="bg-red-600 hover:bg-red-700"
+                                  onClick={() => deleteFlower(flower.id)}
+                                >
+                                  Yes, delete it
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </td>
                     </tr>,
@@ -212,9 +245,12 @@ export default function AdminView() {
                       <tr key={`${flower.id}-edit`}>
                         <td colSpan={6}>
                           <EditProduct
-                            flower={editingFlower}
+                            flower={flower}
                             setStartEdit={setStartEdit}
                             startEdit={startEdit}
+                            onDone={() => {
+                              fetchFlowers(); // ⬅ reload updated list
+                            }}
                           />
                         </td>
                       </tr>

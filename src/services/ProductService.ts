@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Product } from "../types/product";
 
-// const host = "http://localhost:8080/product";
-const host = "https://vocal-loutitia-fontys-8d77c0a6.koyeb.app/product";
+const host = "http://localhost:8080/product";
+// const host = "https://vocal-loutitia-fontys-8d77c0a6.koyeb.app/product";
 
 async function getProducts() {
     try {
@@ -27,14 +27,8 @@ async function getProductById(id: number) {
     }   
 }
 async function createProduct(product: Product) {
-    try {
-        const response = await axios.post(host, product);
-        return response.data;
-    }
-    catch (error) {
-        console.error("Error creating product:", error);
-        throw error;
-    }   
+    const response = await axios.post(host, product);
+    return response.data;
 }
 
 async function updateProduct(product: Product) {
