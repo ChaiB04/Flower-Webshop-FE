@@ -1,36 +1,48 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import type { Product } from "../types/product"
-import { Card, CardContent, CardFooter } from "../components/ui/card"
-import { Badge } from "../components/ui/badge"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
-import { Heart, ShoppingCart, Search } from "lucide-react"
-import useProducts from "../hooks/useProducts"
-
+import { useEffect, useState } from "react";
+import type { Product } from "../types/product";
+import { Card, CardContent, CardFooter } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Heart, ShoppingCart, Search } from "lucide-react";
+import useProducts from "../hooks/useProducts";
+import FlowerCarousel from "./FlowerCarousel";
 
 export default function CustomerView() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("all")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
   // const [favorites, setFavorites] = useState<string[]>([])
 
-  const { products, fetchProducts } = useProducts();
-  
-    useEffect(() => {
-      fetchProducts();
-    }, []);
-    
-  const categories = ["all", ...Array.from(new Set(products.map((flower) => flower.flower_category)))]
+  const { products, fetchProducts, currentPage, setCurrentPage, totalPages } =
+    useProducts();
+
+  useEffect(() => {
+    fetchProducts( currentPage );
+  }, [currentPage]);
+
+  const categories = [
+    "all",
+    ...Array.from(new Set(products.map((flower) => flower.flower_category))),
+  ];
 
   const filteredFlowers = products.filter((flower) => {
     const matchesSearch =
       flower.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      flower.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === "all" || flower.flower_category === selectedCategory
-    return matchesSearch && matchesCategory
-  })
+      flower.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || flower.flower_category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   // const toggleFavorite = (flowerId: string) => {
   //   setFavorites((prev) => (prev.includes(flowerId) ? prev.filter((id) => id !== flowerId) : [...prev, flowerId]))
@@ -51,7 +63,10 @@ export default function CustomerView() {
                 className="pl-10 bg-white/80 border-slate-200 focus:border-blue-300"
               />
             </div>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
               <SelectTrigger className="w-full md:w-48 bg-white/80 border-slate-200">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
@@ -67,6 +82,38 @@ export default function CustomerView() {
         </div>
 
         {/* Products Grid */}
+        <div className="flex justify-center items-center gap-6 mt-12 mb-12">
+          <Button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className={`px-6 py-2 rounded-xl text-white font-semibold transition-colors
+      ${
+        currentPage === 1
+          ? "bg-slate-300 cursor-not-allowed"
+          : "bg-gradient-to-r from-blue-400 to-purple-400 hover:from-blue-500 hover:to-purple-500"
+      }`}
+          >
+            ← Previous
+          </Button>
+
+          <span className="text-slate-600 font-medium text-sm">
+            Page {currentPage} of {totalPages}
+          </span>
+
+          <Button
+            onClick={() => setCurrentPage((p) => p + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-6 py-2 rounded-xl text-white font-semibold transition-colors
+      ${
+        currentPage === totalPages
+          ? "bg-slate-300 cursor-not-allowed"
+          : "bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500"
+      }`}
+          >
+            Next →
+          </Button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredFlowers.map((flower) => (
             <Card
@@ -74,7 +121,7 @@ export default function CustomerView() {
               className="group hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm border-white/50 overflow-hidden"
             >
               <div className="relative">
-               <img src="/logo.png" alt="Site logo" width={400} height={300} loading="lazy" />
+                <FlowerCarousel product={flower} />
 
                 {/* <Button
                   variant="ghost"
@@ -89,24 +136,40 @@ export default function CustomerView() {
                   <Heart className={`h-5 w-5 ${favorites.includes(flower.id.toString()) ? "fill-current" : ""}`} />
                 </Button> */}
                 {flower.stock! <= 0 ? (
-                  <Badge className="absolute top-3 left-3 bg-slate-500 text-white">Out of Stock</Badge>
+                  <Badge className="absolute top-3 left-3 bg-slate-500 text-white">
+                    Out of Stock
+                  </Badge>
                 ) : (
-                 <></>  )}
+                  <></>
+                )}
               </div>
 
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold text-slate-700">{flower.name}</h3>
-                  <span className="text-2xl font-bold text-slate-800">${flower.price}</span>
+                  <h3 className="text-xl font-semibold text-slate-700">
+                    {flower.name}
+                  </h3>
+                  <span className="text-2xl font-bold text-slate-800">
+                    ${flower.price}
+                  </span>
                 </div>
 
-                <Badge variant="secondary" className="mb-3 bg-blue-100 text-blue-700">
+                <Badge
+                  variant="secondary"
+                  className="mb-3 bg-blue-100 text-blue-700"
+                >
                   {flower.flower_category}
                 </Badge>
 
-                <p className="text-slate-600 text-sm mb-3 leading-relaxed">{flower.description}</p>
+                <p className="text-slate-600 text-sm mb-3 leading-relaxed">
+                  {flower.description}
+                </p>
 
-                {flower.meaning && <p className="text-xs text-slate-500 italic mb-4">Meaning: {flower.meaning}</p>}
+                {flower.meaning && (
+                  <p className="text-xs text-slate-500 italic mb-4">
+                    Meaning: {flower.meaning}
+                  </p>
+                )}
               </CardContent>
 
               <CardFooter className="p-6 pt-0">
@@ -124,10 +187,12 @@ export default function CustomerView() {
 
         {filteredFlowers.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-slate-500 text-lg">No flowers found matching your criteria.</p>
+            <p className="text-slate-500 text-lg">
+              No flowers found matching your criteria.
+            </p>
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }

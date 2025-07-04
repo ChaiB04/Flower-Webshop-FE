@@ -9,6 +9,7 @@ export interface Product {
   archived: boolean
   stock: number
   meaning: string
+  photos: string[]
 }
 
 export interface User {
