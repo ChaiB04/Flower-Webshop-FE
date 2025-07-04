@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { Product } from "../types/product"
 import { Card, CardContent, CardFooter } from "../components/ui/card"
 import { Badge } from "../components/ui/badge"
@@ -8,19 +8,23 @@ import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
 import { Heart, ShoppingCart, Search } from "lucide-react"
+import useProducts from "../hooks/useProducts"
 
-interface CustomerViewProps {
-  flowers: Product[]
-}
 
-export default function CustomerView({ flowers }: CustomerViewProps) {
+export default function CustomerView() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
-  const [favorites, setFavorites] = useState<string[]>([])
+  // const [favorites, setFavorites] = useState<string[]>([])
 
-  const categories = ["all", ...Array.from(new Set(flowers.map((flower) => flower.flower_category)))]
+  const { products, fetchProducts } = useProducts();
+  
+    useEffect(() => {
+      fetchProducts();
+    }, []);
+    
+  const categories = ["all", ...Array.from(new Set(products.map((flower) => flower.flower_category)))]
 
-  const filteredFlowers = flowers.filter((flower) => {
+  const filteredFlowers = products.filter((flower) => {
     const matchesSearch =
       flower.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       flower.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -28,9 +32,9 @@ export default function CustomerView({ flowers }: CustomerViewProps) {
     return matchesSearch && matchesCategory
   })
 
-  const toggleFavorite = (flowerId: string) => {
-    setFavorites((prev) => (prev.includes(flowerId) ? prev.filter((id) => id !== flowerId) : [...prev, flowerId]))
-  }
+  // const toggleFavorite = (flowerId: string) => {
+  //   setFavorites((prev) => (prev.includes(flowerId) ? prev.filter((id) => id !== flowerId) : [...prev, flowerId]))
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
@@ -72,7 +76,7 @@ export default function CustomerView({ flowers }: CustomerViewProps) {
               <div className="relative">
                <img src="/logo.png" alt="Site logo" width={400} height={300} loading="lazy" />
 
-                <Button
+                {/* <Button
                   variant="ghost"
                   size="icon"
                   className={`absolute top-3 right-3 ${
@@ -83,7 +87,7 @@ export default function CustomerView({ flowers }: CustomerViewProps) {
                   onClick={() => toggleFavorite(flower.id.toString())}
                 >
                   <Heart className={`h-5 w-5 ${favorites.includes(flower.id.toString()) ? "fill-current" : ""}`} />
-                </Button>
+                </Button> */}
                 {flower.stock! <= 0 ? (
                   <Badge className="absolute top-3 left-3 bg-slate-500 text-white">Out of Stock</Badge>
                 ) : (

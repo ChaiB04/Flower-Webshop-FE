@@ -20,8 +20,7 @@ export default function FlowerShop() {
       <Navigation currentView={currentView} onViewChange={setCurrentView} />
 
       {currentView === "customer" ? (
-        // <CustomerView flowers={flowers} />
-        <></>
+        <CustomerView />
       ) : (
         <AdminView />
       )}
