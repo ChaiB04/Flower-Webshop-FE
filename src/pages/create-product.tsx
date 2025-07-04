@@ -21,33 +21,12 @@ import { useEffect, useState } from "react";
 import { Product } from "../types/product";
 import ProductService from "../services/ProductService";
 import { toast } from "react-toastify";
+import { useProductForm } from "../hooks/useCreateProduct";
 
 export default function CreateProduct({ onDone }: { onDone: () => void }) {
-  const [formData, setFormData] = useState<Partial<Product>>({});
+  const { formData, handleChange, handleSubmit, resetForm } = useProductForm(onDone);
 
   useEffect(() => {}, [formData]);
-
-  const resetForm = () => {
-    setFormData({});
-    onDone();
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-      ProductService.createProduct(formData as Product).then
-      (() => {
-        toast.success("Product created successfully!", {
-          icon: <Sparkles className="h-5 w-5 text-purple-500" />,
-        });
-        resetForm();
-      })
-      .catch((error) => {
-        toast.error("Failed to create product. Please try again and fill everything in.", {
-          icon: <X className="h-5 w-5 text-red-500" />,
-        });
-      });
-  };
 
   return (
     <div className="min-h-screen mb-10">
@@ -81,9 +60,7 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                       id="name"
                       placeholder="e.g., Pink Hydrangea"
                       value={formData.name || ""}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
+                         onChange={(e) => handleChange("name", e.target.value)}
                       required
                       className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl"
                     />
@@ -100,12 +77,7 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                       id="flower_category"
                       placeholder="e.g., Hydrangeas, Roses, Tulips"
                       value={formData.flower_category || ""}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          flower_category: e.target.value,
-                        })
-                      }
+                         onChange={(e) => handleChange("flower_category", e.target.value)}
                       required
                       className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl"
                     />
@@ -122,9 +94,7 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                     </Label>
                     <Select
                       value={formData.product_category || ""}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, product_category: value })
-                      }
+                      onValueChange={(value) => handleChange("product_category", value)}
                       required
                     >
                       <SelectTrigger className="bg-white/80 border-purple-200 focus:border-purple-400 rounded-xl">
@@ -166,12 +136,7 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                       step="0.01"
                       placeholder="24.99"
                       value={formData.price || ""}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          price: Number.parseFloat(e.target.value),
-                        })
-                      }
+                      onChange={(e) => handleChange("price", e.target.value)}
                       required
                       className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl"
                     />
@@ -190,12 +155,7 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                       step="1"
                       placeholder="10"
                       value={formData.stock || ""}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          stock: Number.parseFloat(e.target.value),
-                        })
-                      }
+                      onChange={(e) => handleChange("stock", e.target.value)}
                       required
                       className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl"
                     />
@@ -220,9 +180,7 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                     id="description"
                     placeholder="Describe the beauty and characteristics of this flower..."
                     value={formData.description || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
+                   onChange={(e) => handleChange("description", e.target.value)}
                     required
                     rows={4}
                     className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl resize-none"
@@ -240,9 +198,7 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                     id="meaning"
                     placeholder="e.g., Love and sincerity, Honor and remembrance"
                     value={formData.meaning || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, meaning: e.target.value })
-                    }
+                   onChange={(e) => handleChange("meaning", e.target.value)}
                     className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl"
                   />
                   <p className="text-xs text-slate-500 italic">
@@ -280,7 +236,7 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                         id="archived"
                         checked={!!formData.archived}
                         onCheckedChange={(checked) =>
-                          setFormData({ ...formData, archived: checked })
+                          handleChange("archived", checked)
                         }
                         className="data-[state=checked]:bg-purple-400"
                       />
@@ -290,6 +246,9 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                       >
                         Archive Product
                       </Label>
+                      <p className="text-xs text-slate-500 italic">
+                      Toggle to archive or unarchive this flower. Archived flowers will not appear in the store.
+                    </p>
                     </div>
                   </div>
                 </div>

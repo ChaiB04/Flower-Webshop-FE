@@ -1,7 +1,5 @@
 "use client";
 
-import type React from "react";
-
 import { useEffect, useState } from "react";
 import type { Product } from "../types/product";
 import {
@@ -27,37 +25,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../components/ui/alert-dialog";
+import useProducts from "../hooks/useProducts";
 
 export default function AdminView() {
-  const [products, setProducts] = useState<Product[]>([]);
+const [editingFlower, setEditingFlower] = useState<Product | undefined>();
+const { products, fetchProducts, deleteProduct } = useProducts(editingFlower);
+
   const [startAdd, setStartAdd] = useState(false);
   const [startEdit, setStartEdit] = useState(false);
-  const [editingFlower, setEditingFlower] = useState<Product | undefined>(
-    undefined
-  );
 
   useEffect(() => {
-    fetchFlowers();
+    fetchProducts();
   }, [editingFlower]);
 
-  async function fetchFlowers() {
-    ProductService.getProducts()
-      .then((data) => {
-        setProducts(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-      });
-  }
-
-  async function deleteFlower(id: number) {
-    try {
-      await ProductService.deleteProduct(id);
-      setProducts(products.filter((flower) => flower.id !== id));
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
@@ -98,7 +78,7 @@ export default function AdminView() {
           <CreateProduct
             onDone={() => {
               setStartAdd(false);
-              fetchFlowers();
+              fetchProducts();
             }}
           />
         )}
@@ -118,6 +98,7 @@ export default function AdminView() {
                     <th className="text-left py-3 px-2">Category</th>
                     <th className="text-left py-3 px-2">Price</th>
                     <th className="text-left py-3 px-2">Stock</th>
+                    <th className="text-left py-3 px-2">Status</th>
                     <th className="text-left py-3 px-2">Actions</th>
                   </tr>
                 </thead>
@@ -167,6 +148,18 @@ export default function AdminView() {
                           }
                         >
                           {flower.stock > 0 ? "In Stock" : "Out of Stock"}
+                        </Badge>
+                      </td>
+                       <td className="py-3 px-2">
+                        <Badge
+                          variant={flower.archived ? "default" : "destructive"}
+                          className={
+                            flower.archived 
+                              ? "bg-gray-700 text-gray-100"
+                              : "bg-green-100 text-green-700"
+                          }
+                        >
+                          {flower.archived ? "Archived" : "Active"}
                         </Badge>
                       </td>
                       <td className="py-3 px-2">
@@ -230,7 +223,7 @@ export default function AdminView() {
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
                                   className="bg-red-600 hover:bg-red-700"
-                                  onClick={() => deleteFlower(flower.id)}
+                                  onClick={() => deleteProduct(flower.id)}
                                 >
                                   Yes, delete it
                                 </AlertDialogAction>
@@ -249,7 +242,7 @@ export default function AdminView() {
                             setStartEdit={setStartEdit}
                             startEdit={startEdit}
                             onDone={() => {
-                              fetchFlowers(); // ⬅ reload updated list
+                              fetchProducts(); // reload updated list
                             }}
                           />
                         </td>
