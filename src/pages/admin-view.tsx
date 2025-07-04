@@ -13,7 +13,6 @@ import { Badge } from "../components/ui/badge";
 import { Plus, Edit, Trash2, MoreHorizontalIcon } from "lucide-react";
 import CreateProduct from "./create-product";
 import EditProduct from "./edit-product";
-import ProductService from "../services/ProductService";
 import {
   AlertDialog,
   AlertDialogAction,

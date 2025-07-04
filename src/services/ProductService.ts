@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Product } from "../types/product";
 
-const host = "http://localhost:8080/product";
-// const host = "https://vocal-loutitia-fontys-8d77c0a6.koyeb.app/product";
+// const host = "http://localhost:8080/product";
+const host = "https://vocal-loutitia-fontys-8d77c0a6.koyeb.app/product";
 
 async function getProducts() {
     try {
