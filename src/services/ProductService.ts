@@ -1,14 +1,14 @@
 import axios from "axios";
 import { Product } from "../types/product";
 
-// const host = "http://localhost:8080/product";
-const host = "https://vocal-loutitia-fontys-8d77c0a6.koyeb.app/product";
+const host = "http://localhost:8080/product";
+// const host = "https://vocal-loutitia-fontys-8d77c0a6.koyeb.app/product";
 
-async function getProducts() {
+async function getProducts(page :number ) {
     try {
-        const response = await axios.get(host+"?page=1");
+        const response = await axios.get(host+"?page=" + page);
         console.log("Products fetched successfully:", response.data);
-        return response.data.products.content;
+        return response.data.products;
     }
     catch (error) {
         console.error("Error fetching products:", error);

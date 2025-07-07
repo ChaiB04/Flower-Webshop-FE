@@ -29,7 +29,7 @@ export default function Navigation({ currentView, onViewChange }: NavigationProp
           {/* Center - Brand name */}
           <div className="text-center">
             <h1 className="text-4xl font-serif text-slate-700 italic">Liora</h1>
-            <p className="text-sm text-slate-500 italic">Find out what it means</p>
+            <p className="text-sm text-slate-500 italic">Surround yourself with the beauty of flowers</p>
           </div>
 
           {/* Right side - Navigation */}

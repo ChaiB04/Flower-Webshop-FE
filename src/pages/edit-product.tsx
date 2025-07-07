@@ -36,10 +36,19 @@ export default function EditProduct({
   flower,
   setStartEdit,
   startEdit,
-  onDone = () => {}, 
+  onDone = () => {},
 }: AdminViewProps) {
-  const { formData, setFormData, resetForm, handleSubmit } = useEditProduct(flower, onDone);
-
+  const {
+    formData,
+    setFormData,
+    resetForm,
+    handleSubmit,
+    handlePhotoChange,
+    existingPhotos,
+    newPhotos,
+    removeExistingPhoto,
+    removeNewPhoto,
+  } = useEditProduct(flower, onDone);
 
   return (
     <div>
@@ -229,16 +238,74 @@ export default function EditProduct({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="image" className="text-slate-600 font-medium">
-                    Image URL
-                  </Label>
-                  <Input
-                    id="image"
-                    placeholder="https://example.com/flower-image.jpg"
-                    // value={formData.image || ""}
-                    // onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl"
-                  />
+                  <Label className="cursor-pointer text-purple-600 hover:underline font-medium">Photos</Label>
+
+                  {/* Photo Upload Section */}
+                   <div className="border border-dashed border-purple-200 rounded-xl p-6 bg-purple-50/30 text-center">
+                      <div className="flex flex-col items-center justify-center space-y-2">
+                        <span className="text-3xl">📷</span>
+                        <p className="text-sm text-slate-500">
+                          Drag & drop photos here or
+                        </p>
+                        <Label className="cursor-pointer text-purple-600 hover:underline font-medium">
+                          Browse Files
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handlePhotoChange}
+                            className="hidden"
+                          />
+                        </Label>
+                      </div>
+                    </div>
+
+                  {/* Preview Section */}
+                  <div className="flex flex-wrap gap-4">
+                    {existingPhotos.map((photo, index) => (
+                      <div key={`existing-${index}`} className="relative group overflow-hidden rounded-xl border border-purple-200 bg-white shadow-sm">
+                        <img
+                          src={`data:image/jpeg;base64,${photo}`}
+                          alt={`Existing Flower ${index}`}
+                              className="w-full h-32 object-cover rounded-xl"
+                        />
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          className="absolute top-1 right-1 text-red-500 bg-white/80 backdrop-blur-sm hover:bg-white"
+                          onClick={() => removeExistingPhoto(index)}
+                        >
+                          ✕
+                        </Button>
+                        
+                      </div>
+                    ))}
+
+                  
+                    {newPhotos.map((file, index) => (
+                      <div
+                        key={`new-${index}`}
+                        className="relative group overflow-hidden rounded-xl border border-purple-200 bg-white shadow-sm"
+                      >
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`New Flower ${index}`}
+                          className="w-full h-32 object-cover rounded-xl"
+                        />
+
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          className="absolute top-1 right-1 text-red-500 bg-white/80 backdrop-blur-sm hover:bg-white"
+                          onClick={() => removeNewPhoto(index)}
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -259,7 +326,8 @@ export default function EditProduct({
                       Archive Product
                     </Label>
                     <p className="text-xs text-slate-500 italic">
-                      Toggle to archive or unarchive this flower. Archived flowers will not appear in the store.
+                      Toggle to archive or unarchive this flower. Archived
+                      flowers will not appear in the store.
                     </p>
                   </div>
                 </div>

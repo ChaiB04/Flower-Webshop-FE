@@ -18,13 +18,18 @@ import {
 } from "../components/ui/select";
 import { Save, X, Flower2, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Product } from "../types/product";
-import ProductService from "../services/ProductService";
-import { toast } from "react-toastify";
 import { useProductForm } from "../hooks/useCreateProduct";
 
 export default function CreateProduct({ onDone }: { onDone: () => void }) {
-  const { formData, handleChange, handleSubmit, resetForm } = useProductForm(onDone);
+  const {
+    formData,
+    handleChange,
+    handleSubmit,
+    resetForm,
+    photos,
+    removePhoto,
+    handlePhotoChange,
+  } = useProductForm(onDone);
 
   useEffect(() => {}, [formData]);
 
@@ -60,7 +65,7 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                       id="name"
                       placeholder="e.g., Pink Hydrangea"
                       value={formData.name || ""}
-                         onChange={(e) => handleChange("name", e.target.value)}
+                      onChange={(e) => handleChange("name", e.target.value)}
                       required
                       className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl"
                     />
@@ -77,7 +82,9 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                       id="flower_category"
                       placeholder="e.g., Hydrangeas, Roses, Tulips"
                       value={formData.flower_category || ""}
-                         onChange={(e) => handleChange("flower_category", e.target.value)}
+                      onChange={(e) =>
+                        handleChange("flower_category", e.target.value)
+                      }
                       required
                       className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl"
                     />
@@ -94,7 +101,9 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                     </Label>
                     <Select
                       value={formData.product_category || ""}
-                      onValueChange={(value) => handleChange("product_category", value)}
+                      onValueChange={(value) =>
+                        handleChange("product_category", value)
+                      }
                       required
                     >
                       <SelectTrigger className="bg-white/80 border-purple-200 focus:border-purple-400 rounded-xl">
@@ -180,7 +189,9 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                     id="description"
                     placeholder="Describe the beauty and characteristics of this flower..."
                     value={formData.description || ""}
-                   onChange={(e) => handleChange("description", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("description", e.target.value)
+                    }
                     required
                     rows={4}
                     className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl resize-none"
@@ -198,7 +209,7 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                     id="meaning"
                     placeholder="e.g., Love and sincerity, Honor and remembrance"
                     value={formData.meaning || ""}
-                   onChange={(e) => handleChange("meaning", e.target.value)}
+                    onChange={(e) => handleChange("meaning", e.target.value)}
                     className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl"
                   />
                   <p className="text-xs text-slate-500 italic">
@@ -214,20 +225,57 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             
+
                   <div className="space-y-2">
-                    <Label
-                      htmlFor="image"
-                      className="text-slate-600 font-medium"
-                    >
-                      Image URL
-                    </Label>
-                    <Input
-                      id="image"
-                      placeholder="https://example.com/flower-image.jpg"
-                      // value={formData.image || ""}
-                      // onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                      className="bg-white/80 border-purple-200 focus:border-purple-400 focus:ring-purple-200 rounded-xl"
-                    />
+                    <Label className="text-slate-600 font-medium">Photos</Label>
+
+                    {/* Dropzone / Upload UI */}
+                    <div className="border border-dashed border-purple-200 rounded-xl p-6 bg-purple-50/30 text-center">
+                      <div className="flex flex-col items-center justify-center space-y-2">
+                        <span className="text-3xl">📷</span>
+                        <p className="text-sm text-slate-500">
+                          Drag & drop photos here or
+                        </p>
+                        <Label className="cursor-pointer text-purple-600 hover:underline font-medium">
+                          Browse Files
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handlePhotoChange}
+                            className="hidden"
+                          />
+                        </Label>
+                      </div>
+                    </div>
+
+                    {/* Preview Section */}
+                    {photos.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                        {photos.map((photo, index) => (
+                          <div
+                            key={index}
+                            className="relative group overflow-hidden rounded-xl border border-purple-200 bg-white shadow-sm"
+                          >
+                            <img
+                              src={URL.createObjectURL(photo)}
+                              alt={`Preview ${index}`}
+                              className="w-full h-32 object-cover rounded-xl"
+                            />
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="ghost"
+                              className="absolute top-1 right-1 text-red-500 bg-white/80 backdrop-blur-sm hover:bg-white"
+                              onClick={() => removePhoto(index)}
+                            >
+                              ✕
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center justify-center">
@@ -247,8 +295,9 @@ export default function CreateProduct({ onDone }: { onDone: () => void }) {
                         Archive Product
                       </Label>
                       <p className="text-xs text-slate-500 italic">
-                      Toggle to archive or unarchive this flower. Archived flowers will not appear in the store.
-                    </p>
+                        Toggle to archive or unarchive this flower. Archived
+                        flowers will not appear in the store.
+                      </p>
                     </div>
                   </div>
                 </div>

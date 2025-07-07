@@ -28,14 +28,13 @@ import useProducts from "../hooks/useProducts";
 
 export default function AdminView() {
 const [editingFlower, setEditingFlower] = useState<Product | undefined>();
-const { products, fetchProducts, deleteProduct } = useProducts(editingFlower);
-
+const { products, fetchProducts, deleteProduct, currentPage, setCurrentPage, totalPages } = useProducts(editingFlower);
   const [startAdd, setStartAdd] = useState(false);
   const [startEdit, setStartEdit] = useState(false);
 
   useEffect(() => {
-    fetchProducts();
-  }, [editingFlower]);
+    fetchProducts(currentPage);
+  }, [currentPage, editingFlower]);
 
 
   return (
@@ -77,7 +76,7 @@ const { products, fetchProducts, deleteProduct } = useProducts(editingFlower);
           <CreateProduct
             onDone={() => {
               setStartAdd(false);
-              fetchProducts();
+              fetchProducts(currentPage);
             }}
           />
         )}
@@ -109,11 +108,11 @@ const { products, fetchProducts, deleteProduct } = useProducts(editingFlower);
                     >
                       <td className="py-3 px-2">
                         <img
-                          src="/logo.png"
-                          alt="Site logo"
-                          width={60}
-                          height={60}
-                          loading="lazy"
+                           src={`data:image/jpeg;base64,${flower.photos[0]}` || "/logo.png"} 
+                          alt={flower.name}
+                          className="rounded-lg"
+                          width={100}
+                          height={100}
                         />
                       </td>
                       <td className="py-3 px-2">
@@ -241,7 +240,7 @@ const { products, fetchProducts, deleteProduct } = useProducts(editingFlower);
                             setStartEdit={setStartEdit}
                             startEdit={startEdit}
                             onDone={() => {
-                              fetchProducts(); // reload updated list
+                              fetchProducts(currentPage); // reload updated list
                             }}
                           />
                         </td>
@@ -252,8 +251,43 @@ const { products, fetchProducts, deleteProduct } = useProducts(editingFlower);
               </table>
             </div>
           </CardContent>
+
+        {/* pagination navigation */}
+          <div className="flex justify-center items-center gap-6 mt-5 mb-5">
+          <Button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className={`px-6 py-2 rounded-xl text-white font-semibold transition-colors
+      ${
+        currentPage === 1
+          ? "bg-slate-300 cursor-not-allowed"
+          : "bg-gradient-to-r from-blue-400 to-purple-400 hover:from-blue-500 hover:to-purple-500"
+      }`}
+          >
+            ← Previous
+          </Button>
+
+          <span className="text-slate-600 font-medium text-sm">
+            Page {currentPage} of {totalPages}
+          </span>
+
+          <Button
+            onClick={() => setCurrentPage((p) => p + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-6 py-2 rounded-xl text-white font-semibold transition-colors
+      ${
+        currentPage === totalPages
+          ? "bg-slate-300 cursor-not-allowed"
+          : "bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500"
+      }`}
+          >
+            Next →
+          </Button>
+        </div>
         </Card>
+        
       </div>
+      
     </div>
   );
 }

@@ -4,15 +4,18 @@ import ProductService from "../services/ProductService";
 
 export default function useProducts(editingFlower?: Product) {
   const [products, setProducts] = useState<Product[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(currentPage);
   }, [editingFlower]);
 
-  async function fetchProducts() {
+  async function fetchProducts( page : number) {
     try {
-      const data = await ProductService.getProducts();
-      setProducts(data);
+      const data = await ProductService.getProducts(page);
+      setProducts(data.content);
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -31,5 +34,8 @@ export default function useProducts(editingFlower?: Product) {
     products,
     fetchProducts,
     deleteProduct,
+    currentPage,
+    setCurrentPage,
+    totalPages
   };
 }
