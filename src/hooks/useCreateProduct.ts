@@ -1,6 +1,5 @@
 // hooks/useProductForm.ts
 import { useState } from "react";
-import { Save, X, Flower2, Sparkles } from "lucide-react";
 import { Product } from "../types/product";
 import ProductService from "../services/ProductService";
 import { toast } from "react-toastify";

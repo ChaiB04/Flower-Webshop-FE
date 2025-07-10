@@ -3,8 +3,7 @@
 import "./index.css";
 import "./App.css";
 import { useState } from "react";
-import { mockFlowers } from "./data/flowers";
-import { Product } from "./types/product";
+import { Analytics } from "@vercel/analytics/react"
 import Navigation from "./pages/navigation";
 import CustomerView from "./pages/customer-view";
 import AdminView from "./pages/admin-view";
@@ -17,6 +16,7 @@ export default function FlowerShop() {
 
   return (
     <div className="min-h-screen">
+      <Analytics/>
       <Navigation currentView={currentView} onViewChange={setCurrentView} />
 
       {currentView === "customer" ? (

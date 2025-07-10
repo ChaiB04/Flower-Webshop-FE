@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Product } from "../types/product";
 
-const host = "http://localhost:8080/product";
-// const host = "https://vocal-loutitia-fontys-8d77c0a6.koyeb.app/product";
+const host = process.env.REACT_APP_BACKEND_URL + "/product";
+
 
 async function getProducts(page :number ) {
     try {
